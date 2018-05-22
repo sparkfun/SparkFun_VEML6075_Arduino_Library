@@ -4,9 +4,11 @@
   Do you like this library? Help support SparkFun. Buy a board!
   https://www.sparkfun.com/products/14733
   Written by Jim Lindblom @ SparkFun Electronics, May 4th, 2018
-  The VEML6075 is a TODO
+  The VEML6075 senses UVA and UVB light, which allows for a calculation
+  of the UV index.
   
-  This library handles the initialization of the VEML6075 and TODO
+  This library handles the initialization, configuration and monitoring of the 
+  UVA and UVB intensity, and calculation of the UV index.
 
   Development environment specifics:
   Arduino IDE 1.8.5
@@ -120,14 +122,14 @@ public:
     VEML6075_error_t setIntegrationTime(veml6075_uv_it_t it);
     veml6075_uv_it_t getIntegrationTime(void);
 
-    VEML6075_error_t setHD(veml6075_hd_t hd);
-    veml6075_hd_t getHD(void);
+    VEML6075_error_t setHighDynamic(veml6075_hd_t hd);
+    veml6075_hd_t getHighDynamic(void);
 
-    VEML6075_error_t setTrig(veml6075_uv_trig_t trig);
-    veml6075_uv_trig_t getTrig(void);
+    VEML6075_error_t setTrigger(veml6075_uv_trig_t trig);
+    veml6075_uv_trig_t getTrigger(void);
 
-    VEML6075_error_t setAF(veml6075_af_t af);
-    veml6075_af_t getAF(void);
+    VEML6075_error_t setAutoForce(veml6075_af_t af);
+    veml6075_af_t getAutoForce(void);
 
     VEML6075_error_t powerOn(boolean enable = true);
     VEML6075_error_t shutdown(boolean shutdown = true);
@@ -167,13 +169,11 @@ private:
     unsigned long _lastReadTime;
     float _lastIndex, _lastUVA, _lastUVB;
 
-    VEML6075_error_t readDeviceID(veml6075_t * id);
-
     VEML6075_error_t _connected(void);
 
 // I2C Read/Write
-    VEML6075_error_t readI2CBuffer(veml6075_t * dest, VEML6075_REGISTER_t startRegister, uint16_t len);
-    VEML6075_error_t writeI2CBuffer(veml6075_t * src, VEML6075_REGISTER_t startRegister, uint16_t len);
+    VEML6075_error_t readI2CBuffer(uint8_t * dest, VEML6075_REGISTER_t startRegister, uint16_t len);
+    VEML6075_error_t writeI2CBuffer(uint8_t * src, VEML6075_REGISTER_t startRegister, uint16_t len);
     VEML6075_error_t readI2CRegister(veml6075_t * dest, VEML6075_REGISTER_t registerAddress);
     VEML6075_error_t writeI2CRegister(veml6075_t data, VEML6075_REGISTER_t registerAddress);
 };
