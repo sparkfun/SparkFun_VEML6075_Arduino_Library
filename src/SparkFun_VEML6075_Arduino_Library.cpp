@@ -32,6 +32,7 @@
 #endif
 
 #define VEML6075_REGISTER_LENGTH 2 // 12 bytes per register
+#define NUM_INTEGRATION_TIMES 5
 
 #define VEML6075_DEVICE_ID 0x26
 
@@ -52,18 +53,34 @@
 
 #define VEML6075_MASK(reg, mask, shift) ((reg & mask) >> shift)
 
-// TODO: move this to a class variable
-veml6075_calibration_t g_CALIBRATION = {
-    .uv_alpha =1.0,
-    .uv_beta = 1.0,
-    .uv_gamma = 1.0,
-    .uv_delta = 1.0,
-    .uva_a_coef = 2.22,
-    .uva_b_coef = 1.33,
-    .uvb_c_coef = 2.95,
-    .uvb_d_coef = 1.75,
-    .uva_responsivity = 0.001111,
-    .uvb_responsivity = 0.00125
+const float UVA_RESPONSIVITY_100MS_UNCOVERED = 0.001111;
+const float UVB_RESPONSIVITY_100MS_UNCOVERED = 0.00125;
+const float HD_SCALAR = 2.0;
+const float UV_ALPHA = 1.0;
+const float UV_BETA = 1.0;
+const float UV_GAMMA = 1.0;
+const float UV_DELTA = 1.0;
+const float UVA_A_COEF = 2.22;
+const float UVA_B_COEF = 1.33;
+const float UVA_C_COEF = 2.95;
+const float UVA_D_COEF = 1.75;
+
+const float UVA_RESPONSIVITY[NUM_INTEGRATION_TIMES] = 
+{
+    UVA_RESPONSIVITY_100MS_UNCOVERED / 0.5016286645,
+    UVA_RESPONSIVITY_100MS_UNCOVERED,
+    UVA_RESPONSIVITY_100MS_UNCOVERED / 2.039087948,
+    UVA_RESPONSIVITY_100MS_UNCOVERED / 3.781758958,
+    UVA_RESPONSIVITY_100MS_UNCOVERED / 7.371335505
+};
+
+const float UVB_RESPONSIVITY[NUM_INTEGRATION_TIMES] = 
+{
+    UVB_RESPONSIVITY_100MS_UNCOVERED / 0.5016286645,
+    UVB_RESPONSIVITY_100MS_UNCOVERED,
+    UVB_RESPONSIVITY_100MS_UNCOVERED / 2.039087948,
+    UVB_RESPONSIVITY_100MS_UNCOVERED / 3.781758958,
+    UVB_RESPONSIVITY_100MS_UNCOVERED / 7.371335505
 };
 
 VEML6075::VEML6075()
@@ -74,6 +91,9 @@ VEML6075::VEML6075()
     _lastReadTime = 0;
     _integrationTime = 0;
     _lastIndex = 0.0;
+    _aResponsivity = UVA_RESPONSIVITY_100MS_UNCOVERED;
+    _bResponsivity = UVB_RESPONSIVITY_100MS_UNCOVERED;
+    _hdEnabled = false;
 }
 
 boolean VEML6075::begin(void)
@@ -151,6 +171,9 @@ VEML6075_error_t VEML6075::setIntegrationTime(VEML6075::veml6075_uv_it_t it)
         return err;
     }
 
+    _aResponsivity = UVA_RESPONSIVITY[(uint8_t)it];
+    _bResponsivity = UVB_RESPONSIVITY[(uint8_t)it];
+
     switch (it)
     {
     case IT_50MS:
@@ -198,6 +221,14 @@ VEML6075_error_t VEML6075::setHighDynamic(VEML6075::veml6075_hd_t hd)
         return err;
     }
     
+    if (hd == DYNAMIC_HIGH) 
+    {
+        _hdEnabled = true;
+    }
+    else
+    {
+        _hdEnabled = false;        
+    }
     conf &= ~(VEML6075_HD_MASK);
     conf |= (hd << VEML6075_HD_SHIFT);
     return writeI2CRegister(conf, VEML6075::REG_UV_CONF);
@@ -376,24 +407,22 @@ float VEML6075::index(void)
     uvComp1 = this->uvcomp1();
     uvComp2 = this->uvcomp2();
 
-    float uvaCalc = (float) uva - ((g_CALIBRATION.uva_a_coef * g_CALIBRATION.uv_alpha * (float) uvComp1)
-                                         / g_CALIBRATION.uv_gamma)
-                                - ((g_CALIBRATION.uva_b_coef * g_CALIBRATION.uv_alpha * (float) uvComp2)
-                                         / g_CALIBRATION.uv_delta);
+    float uvaCalc = (float) uva - ((UVA_A_COEF * UV_ALPHA * (float) uvComp1) / UV_GAMMA)
+                                - ((UVA_B_COEF * UV_ALPHA * (float) uvComp2) / UV_DELTA);
+    float uvbCalc = (float) uvb - ((UVA_C_COEF * UV_BETA * (float) uvComp1) / UV_GAMMA)
+                                - ((UVA_D_COEF * UV_BETA * (float) uvComp2) / UV_DELTA);
 
-    float uvbCalc = (float) uvb - ((g_CALIBRATION.uvb_c_coef * g_CALIBRATION.uv_beta * (float) uvComp1)
-                                         / g_CALIBRATION.uv_gamma)
-                                - ((g_CALIBRATION.uvb_d_coef * g_CALIBRATION.uv_beta * (float) uvComp2)
-                                         / g_CALIBRATION.uv_delta);
-
-    float uvia = uvaCalc * (1 / g_CALIBRATION.uv_alpha) * g_CALIBRATION.uva_responsivity;
-    float uvib = uvbCalc * (1 / g_CALIBRATION.uv_beta) * g_CALIBRATION.uvb_responsivity;
+    float uvia = uvaCalc * (1.0 / UV_ALPHA) * _aResponsivity;
+    float uvib = uvbCalc * (1.0 / UV_BETA) * _bResponsivity;
     _lastIndex = (uvia + uvib) / 2.0;
+    if (_hdEnabled)
+    {
+        _lastIndex *= HD_SCALAR;
+    }
     
     _lastReadTime = millis();
     return _lastIndex;
 }
-
 
 uint16_t VEML6075::uvcomp1(void)
 {

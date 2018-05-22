@@ -50,19 +50,6 @@ typedef enum {
 } VEML6075_error_t;
 const VEML6075_error_t VEML6075_SUCCESS = VEML6075_ERROR_SUCCESS;
 
-struct veml6075_calibration_t {
-    float uv_alpha;
-    float uv_beta;
-    float uv_gamma;
-    float uv_delta;
-    float uva_a_coef;
-    float uva_b_coef;
-    float uvb_c_coef;
-    float uvb_d_coef;
-    float uva_responsivity;
-    float uvb_responsivity;
-};
-
 struct test {
     float a;
     float b;
@@ -168,6 +155,8 @@ private:
     unsigned int _integrationTime;
     unsigned long _lastReadTime;
     float _lastIndex, _lastUVA, _lastUVB;
+    float _aResponsivity, _bResponsivity;
+    bool _hdEnabled;
 
     VEML6075_error_t _connected(void);
 
