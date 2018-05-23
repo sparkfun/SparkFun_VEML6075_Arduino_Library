@@ -25,7 +25,7 @@ VEML6075 uv; // Create a VEML6075 object
 
 void setup() {
   Serial.begin(9600);
-  if (!uv.begin()) {
+  if (uv.begin() == false) {
     Serial.println("Unable to communicate with VEML6075.");
     while (1) ;
   }

@@ -26,7 +26,7 @@ void setup() {
   Serial.begin(9600);
   // the VEML6075's begin function can take no parameters
   // It will return true on success or false on failure to communicate
-  if (!uv.begin()) {
+  if (uv.begin() == false) {
     Serial.println("Unable to communicate with VEML6075.");
     while (1) ;
   }

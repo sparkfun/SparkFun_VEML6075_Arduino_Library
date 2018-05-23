@@ -51,7 +51,7 @@ const float UVB_IR_COEF_D  = 1.75; // d
 
 void setup() {
   Serial.begin(9600);
-  if (!uv.begin()) {
+  if (uv.begin() == false) {
     Serial.println("Unable to communicate with VEML6075.");
     while (1) ;
   }
