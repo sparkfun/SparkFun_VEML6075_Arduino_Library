@@ -1,14 +1,17 @@
 /*
-  This is a library written for the VEML6075 4-bit I2C I/O Expander
+  This is a library written for the VEML6075 UVA/UVB/UV index Sensopr
   SparkFun sells these at its website: www.sparkfun.com
   Do you like this library? Help support SparkFun. Buy a board!
-  https://www.sparkfun.com/products/14733
-  Written by Jim Lindblom @ SparkFun Electronics, May 4th, 2018
+  https://www.sparkfun.com/products/14748
+  Written by Jim Lindblom @ SparkFun Electronics, May 23, 2018
+
   The VEML6075 senses UVA and UVB light, which allows for a calculation
   of the UV index.
   
   This library handles the initialization, configuration and monitoring of the 
   UVA and UVB intensity, and calculation of the UV index.
+  
+  https://github.com/sparkfunX/SparkFun_VEML6075_Arduino_Library
 
   Development environment specifics:
   Arduino IDE 1.8.5
@@ -114,6 +117,7 @@ public:
 
     VEML6075_error_t setTrigger(veml6075_uv_trig_t trig);
     veml6075_uv_trig_t getTrigger(void);
+    VEML6075_error_t trigger(void);
 
     VEML6075_error_t setAutoForce(veml6075_af_t af);
     veml6075_af_t getAutoForce(void);
@@ -122,16 +126,19 @@ public:
     VEML6075_error_t shutdown(boolean shutdown = true);
     VEML6075_shutdown_t getShutdown(void);
 
-    VEML6075_error_t trigger(void);
-
-    uint16_t uva(void);
-    uint16_t uvb(void);
-    uint16_t a(void);
-    uint16_t b(void);
+    uint16_t rawUva(void);
+    uint16_t rawUvb(void);
+    float uva(void);
+    float uvb(void);
     float index(void);
+    float a(void);
+    float b(void);
+    float i(void);
 
-    uint16_t uvcomp1(void);
-    uint16_t uvcomp2(void);
+    uint16_t uvComp1(void);
+    uint16_t uvComp2(void);
+    uint16_t visibleCompensation(void);
+    uint16_t irCompensation(void);
 
     VEML6075_error_t deviceID(uint8_t * id);
     VEML6075_error_t deviceAddress(uint8_t * address);

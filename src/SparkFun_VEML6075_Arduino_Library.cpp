@@ -1,12 +1,16 @@
 /*
-  This is a library written for the VEML6075 TODO
+  This is a library written for the VEML6075 UVA/UVB/UV index Sensopr
   SparkFun sells these at its website: www.sparkfun.com
   Do you like this library? Help support SparkFun. Buy a board!
-  https://www.sparkfun.com/products/TODO
-  Written by Jim Lindblom @ SparkFun Electronics, May 18th, 2018
-  The VEML6075 is a TODO
+  https://www.sparkfun.com/products/14748
+  Written by Jim Lindblom @ SparkFun Electronics, May 23, 2018
   
-  This library handles the initialization of the VEML6075 and TODO
+  The VEML6075 senses UVA and UVB light, which allows for a calculation
+  of the UV index.
+  
+  This library handles the initialization, configuration and monitoring of the 
+  UVA and UVB intensity, and calculation of the UV index.
+
   https://github.com/sparkfunX/SparkFun_VEML6075_Arduino_Library
 
   Development environment specifics:
@@ -53,34 +57,37 @@
 
 #define VEML6075_MASK(reg, mask, shift) ((reg & mask) >> shift)
 
-const float UVA_RESPONSIVITY_100MS_UNCOVERED = 0.001111;
-const float UVB_RESPONSIVITY_100MS_UNCOVERED = 0.00125;
 const float HD_SCALAR = 2.0;
+
 const float UV_ALPHA = 1.0;
 const float UV_BETA = 1.0;
 const float UV_GAMMA = 1.0;
 const float UV_DELTA = 1.0;
+
 const float UVA_A_COEF = 2.22;
 const float UVA_B_COEF = 1.33;
 const float UVA_C_COEF = 2.95;
 const float UVA_D_COEF = 1.75;
 
+const float UVA_RESPONSIVITY_100MS_UNCOVERED = 0.001111;
+const float UVB_RESPONSIVITY_100MS_UNCOVERED = 0.00125;
+
 const float UVA_RESPONSIVITY[NUM_INTEGRATION_TIMES] = 
 {
-    UVA_RESPONSIVITY_100MS_UNCOVERED / 0.5016286645,
-    UVA_RESPONSIVITY_100MS_UNCOVERED,
-    UVA_RESPONSIVITY_100MS_UNCOVERED / 2.039087948,
-    UVA_RESPONSIVITY_100MS_UNCOVERED / 3.781758958,
-    UVA_RESPONSIVITY_100MS_UNCOVERED / 7.371335505
+    UVA_RESPONSIVITY_100MS_UNCOVERED / 0.5016286645, // 50ms
+    UVA_RESPONSIVITY_100MS_UNCOVERED,                // 100ms
+    UVA_RESPONSIVITY_100MS_UNCOVERED / 2.039087948,  // 200ms
+    UVA_RESPONSIVITY_100MS_UNCOVERED / 3.781758958,  // 400ms
+    UVA_RESPONSIVITY_100MS_UNCOVERED / 7.371335505   // 800ms
 };
 
 const float UVB_RESPONSIVITY[NUM_INTEGRATION_TIMES] = 
 {
-    UVB_RESPONSIVITY_100MS_UNCOVERED / 0.5016286645,
-    UVB_RESPONSIVITY_100MS_UNCOVERED,
-    UVB_RESPONSIVITY_100MS_UNCOVERED / 2.039087948,
-    UVB_RESPONSIVITY_100MS_UNCOVERED / 3.781758958,
-    UVB_RESPONSIVITY_100MS_UNCOVERED / 7.371335505
+    UVB_RESPONSIVITY_100MS_UNCOVERED / 0.5016286645, // 50ms
+    UVB_RESPONSIVITY_100MS_UNCOVERED,                // 100ms
+    UVB_RESPONSIVITY_100MS_UNCOVERED / 2.039087948,  // 200ms
+    UVB_RESPONSIVITY_100MS_UNCOVERED / 3.781758958,  // 400ms
+    UVB_RESPONSIVITY_100MS_UNCOVERED / 7.371335505   // 800ms
 };
 
 VEML6075::VEML6075()
@@ -327,8 +334,8 @@ VEML6075_error_t VEML6075::shutdown(boolean shutdown = true)
     {
         sd = VEML6075::SHUT_DOWN;
     }
-    conf &= !(VEML6075_SHUTDOWN_MASK); // Clear shutdown bit
-    conf |= VEML6075_MASK(conf, VEML6075_SHUTDOWN_MASK, VEML6075_SHUTDOWN_SHIFT);
+    conf &= ~(VEML6075_SHUTDOWN_MASK); // Clear shutdown bit
+    conf |= sd << VEML6075_SHUTDOWN_SHIFT;//VEML6075_MASK(conf, VEML6075_SHUTDOWN_MASK, VEML6075_SHUTDOWN_SHIFT);
     return writeI2CRegister(conf, VEML6075::REG_UV_CONF);
 }
 
@@ -341,17 +348,34 @@ VEML6075_error_t VEML6075::trigger(void)
     return setTrigger(TRIGGER_ONE_OR_UV_TRIG);
 }
 
-uint16_t VEML6075::a(void)
+float VEML6075::a(void)
 {
     return uva();
 }
 
-uint16_t VEML6075::b(void)
+float VEML6075::b(void)
 {
     return uvb();
 }
 
-uint16_t VEML6075::uva(void)
+float VEML6075::i(void)
+{
+    return index();
+}
+
+float VEML6075::uva(void)
+{
+    return (float)rawUva() - ((UVA_A_COEF * UV_ALPHA * uvComp1()) / UV_GAMMA) 
+                           - ((UVA_B_COEF * UV_ALPHA * uvComp2()) / UV_DELTA);
+}
+
+float VEML6075::uvb(void)
+{
+    return (float)rawUvb() - ((UVA_C_COEF * UV_BETA * uvComp1()) / UV_GAMMA)
+                           - ((UVA_D_COEF * UV_BETA * uvComp2()) / UV_DELTA);
+}
+
+uint16_t VEML6075::rawUva(void)
 {
     VEML6075_error_t err;
     uint8_t uva[2] = {0, 0};
@@ -370,7 +394,7 @@ uint16_t VEML6075::uva(void)
     return _lastUVA;
 }
 
-uint16_t VEML6075::uvb(void)
+uint16_t VEML6075::rawUvb(void)
 {
     VEML6075_error_t err;
     uint8_t uvb[2] = {0, 0};
@@ -399,18 +423,10 @@ float VEML6075::index(void)
     /*if ((_lastReadTime + _integrationTime) > millis())
     {
         return _lastIndex;
-    }
-    Serial.println("Update!");*/
-    
-    uva = this->a();
-    uvb = this->b();
-    uvComp1 = this->uvcomp1();
-    uvComp2 = this->uvcomp2();
+    }*/
 
-    float uvaCalc = (float) uva - ((UVA_A_COEF * UV_ALPHA * (float) uvComp1) / UV_GAMMA)
-                                - ((UVA_B_COEF * UV_ALPHA * (float) uvComp2) / UV_DELTA);
-    float uvbCalc = (float) uvb - ((UVA_C_COEF * UV_BETA * (float) uvComp1) / UV_GAMMA)
-                                - ((UVA_D_COEF * UV_BETA * (float) uvComp2) / UV_DELTA);
+    float uvaCalc = this->uva();
+    float uvbCalc = this->uvb();
 
     float uvia = uvaCalc * (1.0 / UV_ALPHA) * _aResponsivity;
     float uvib = uvbCalc * (1.0 / UV_BETA) * _bResponsivity;
@@ -424,7 +440,7 @@ float VEML6075::index(void)
     return _lastIndex;
 }
 
-uint16_t VEML6075::uvcomp1(void)
+uint16_t VEML6075::uvComp1(void)
 {
     VEML6075_error_t err;
     uint8_t uvcomp1[2] = {0, 0};
@@ -436,7 +452,7 @@ uint16_t VEML6075::uvcomp1(void)
     return (uvcomp1[0] & 0x00FF) | ((uvcomp1[1] & 0x00FF) << 8);
 }
 
-uint16_t VEML6075::uvcomp2(void)
+uint16_t VEML6075::uvComp2(void)
 {
     VEML6075_error_t err;
     uint8_t uvcomp2[2] = {0, 0};
@@ -446,6 +462,16 @@ uint16_t VEML6075::uvcomp2(void)
         return err;
     }
     return (uvcomp2[0] & 0x00FF) | ((uvcomp2[1] & 0x00FF) << 8);
+}
+
+uint16_t VEML6075::visibleCompensation(void)
+{
+    return uvComp1();
+}
+
+uint16_t VEML6075::irCompensation(void)
+{
+    return uvComp2();
 }
 
 VEML6075_error_t VEML6075::_connected(void)
@@ -478,7 +504,7 @@ VEML6075_error_t VEML6075::deviceID(uint8_t * id)
     {
         return err;
     }
-    Serial.println("Device ID: " + String(devID, HEX));
+    VEML6075_DEBUGLN(("Device ID: " + String(devID, HEX)));
     *id = (uint8_t) (devID & 0x00FF);
     return err;
 }
@@ -493,7 +519,7 @@ VEML6075_error_t VEML6075::deviceAddress(uint8_t * address)
         return err;
     }
     *address = ret[1];
-    Serial.println("Address: " + String(ret[1]));
+    VEML6075_DEBUGLN(("Address: " + String(ret[1])));
     return err;
 }
 
