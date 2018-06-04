@@ -74,7 +74,6 @@ void loop() {
   // Calculate the simple UVIA and UVIB. These are used to calculate the UVI signal.
   uviaCalc = (float)rawA - ((UVA_VIS_COEF_A * CALIBRATION_ALPHA_VIS * visibleComp) / CALIBRATION_GAMMA_IR)
                   - ((UVA_IR_COEF_B  * CALIBRATION_ALPHA_VIS * irComp) /  CALIBRATION_DELTA_IR);
-  uviaCalc = (float)rawA - UVA_VIS_COEF_A * visibleComp - UVA_IR_COEF_B * irComp;
   uvibCalc = (float)rawB - ((UVB_VIS_COEF_C * CALIBRATION_BETA_VIS * visibleComp) / CALIBRATION_GAMMA_IR)
                   - ((UVB_IR_COEF_D  * CALIBRATION_BETA_VIS * irComp) /  CALIBRATION_DELTA_IR);
 
