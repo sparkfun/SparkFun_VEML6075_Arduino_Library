@@ -21,9 +21,6 @@ VEML6075_shutdown_t	KEYWORD1
 #######################################
 
 begin	KEYWORD2
-a	KEYWORD2
-b	KEYWORD2
-i	KEYWORD2
 uva	KEYWORD2
 uvb	KEYWORD2
 rawUva	KEYWORD2
