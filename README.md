@@ -1,6 +1,10 @@
 SparkX VEML6075 Arduino Library
 ==============================
 
+![SparkFun UV Sensor (Qwiic) - VEML6075](https://cdn.sparkfun.com//assets/parts/1/2/9/8/0/14748-UV_Sensor__Qwiic__-_VEML6075-01.jpg)
+
+[*SparkX UV Sensor (Qwiic) - VEML6075 (SPX-14748)*](https://www.sparkfun.com/products/14748)
+
 The VEML6075 senses UVA and UVB light, which allows for a calculation of the UV index.
   
 This library handles the initialization, configuration 1and monitoring of the UVA and UVB intensity, and calculation of the UV index.
