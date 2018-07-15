@@ -6,7 +6,7 @@
 # Datatypes (KEYWORD1)
 #######################################
 
-SparkFun_VEML6075_Arduino_Library		KEYWORD1
+SparkFun_VEML6075_Arduino_Library	KEYWORD1
 VEML6075	KEYWORD1
 veml6075_t	KEYWORD1
 VEML6075_error_t	KEYWORD1
