@@ -120,7 +120,9 @@ VEML6075_error_t VEML6075::begin(TwoWire &wirePort)
     _deviceAddress = VEML6075_ADDRESS;
     _i2cPort = &wirePort;
 
-    _i2cPort->end();
+    #ifdef WIRE_HAS_END
+        _i2cPort->end();
+    #endif
     _i2cPort->begin();
 
     err = _connected();
@@ -214,7 +216,7 @@ VEML6075::veml6075_uv_it_t VEML6075::getIntegrationTime(void)
     {
         return IT_INVALID;
     }
-    return (conf & VEML6075_UV_IT_MASK) >> VEML6075_UV_IT_SHIFT;
+    return static_cast<VEML6075::veml6075_uv_it_t>((conf & VEML6075_UV_IT_MASK) >> VEML6075_UV_IT_SHIFT);
 }
 
 VEML6075_error_t VEML6075::setHighDynamic(VEML6075::veml6075_hd_t hd)
@@ -251,7 +253,7 @@ VEML6075::veml6075_hd_t VEML6075::getHighDynamic(void)
     {
         return HD_INVALID;
     }
-    return (conf & VEML6075_HD_MASK) >> VEML6075_HD_SHIFT;    
+    return static_cast<VEML6075::veml6075_hd_t>((conf & VEML6075_HD_MASK) >> VEML6075_HD_SHIFT);
 }
 
 VEML6075_error_t VEML6075::setTrigger(VEML6075::veml6075_uv_trig_t trig)
@@ -280,7 +282,7 @@ VEML6075::veml6075_uv_trig_t VEML6075::getTrigger(void)
     {
         return TRIGGER_INVALID;
     }
-    return (conf & VEML6075_TRIG_MASK) >> VEML6075_TRIG_SHIFT;    
+    return static_cast<VEML6075::veml6075_uv_trig_t>((conf & VEML6075_TRIG_MASK) >> VEML6075_TRIG_SHIFT);
 }
 
 
@@ -310,15 +312,15 @@ VEML6075::veml6075_af_t VEML6075::getAutoForce(void)
     {
         return AF_INVALID;
     }
-    return (conf & VEML6075_AF_MASK) >> VEML6075_AF_SHIFT;        
+    return static_cast<VEML6075::veml6075_af_t>((conf & VEML6075_AF_MASK) >> VEML6075_AF_SHIFT);
 }
 
-VEML6075_error_t VEML6075::powerOn(boolean enable = true)
+VEML6075_error_t VEML6075::powerOn(boolean enable)
 {
     return shutdown(!enable);
 }
 
-VEML6075_error_t VEML6075::shutdown(boolean shutdown = true)
+VEML6075_error_t VEML6075::shutdown(boolean shutdown)
 {
     VEML6075_error_t err;
     veml6075_t conf;
