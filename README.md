@@ -20,7 +20,7 @@ Repository Contents
 Documentation
 --------------
 * **[Installing an Arduino Library Guide](https://learn.sparkfun.com/tutorials/installing-an-arduino-library)** - Basic information on how to install an Arduino library.
-* **[Library](https://github.com/sparkfun/SparkFun_VEML6075_Arduino_Library)** - Arduino library.
+* **[Product Repo](https://github.com/sparkfun/SparkFun_UV_Sensor)** - Product Repo.
 * **[Hookup Guide](https://learn.sparkfun.com/tutorials/qwiic-uv-sensor-veml6075-hookup-guide)** - Basic hookup guide.
 
 Product Versions
