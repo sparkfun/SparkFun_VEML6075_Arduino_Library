@@ -1,9 +1,9 @@
-SparkX VEML6075 Arduino Library
+SparkFun VEML6075 Arduino Library
 ==============================
 
-![SparkFun UV Sensor (Qwiic) - VEML6075](https://cdn.sparkfun.com//assets/parts/1/2/9/8/0/14748-UV_Sensor__Qwiic__-_VEML6075-01.jpg)
+[![SparkFun UV Sensor (Qwiic) - VEML6075](https://cdn.sparkfun.com//assets/parts/1/3/4/4/7/15089-SparkFun_UV_Light_Sensor_Breakout_-_VEML6075__Qwiic_-01.jpg)](https://www.sparkfun.com/products/15089)
 
-[*SparkX UV Sensor (Qwiic) - VEML6075 (SPX-14748)*](https://www.sparkfun.com/products/14748)
+[*SparkFun UV Sensor (Qwiic) - VEML6075 (SEN-15089)*](https://www.sparkfun.com/products/15089)
 
 The VEML6075 senses UVA and UVB light, which allows for a calculation of the UV index.
   
@@ -18,9 +18,15 @@ Repository Contents
 * **library.properties** - General library properties for the Arduino package manager. 
 
 Documentation
--------------
+--------------
+* **[Installing an Arduino Library Guide](https://learn.sparkfun.com/tutorials/installing-an-arduino-library)** - Basic information on how to install an Arduino library.
+* **[Library](https://github.com/sparkfun/SparkFun_VEML6075_Arduino_Library)** - Arduino library.
+* **[Hookup Guide](https://learn.sparkfun.com/tutorials/qwiic-uv-sensor-veml6075-hookup-guide)** - Basic hookup guide.
 
-Coming soon!
+Product Versions
+----------------
+* [SEN-15089](https://www.sparkfun.com/products/15089)- SparkFun Red Version
+* [SPX-14748](https://www.sparkfun.com/products/14748)- SparkX Version
 
 License Information
 -------------------
