@@ -14,7 +14,7 @@ void setup() {
 
 void loop() {
   Serial.println(String(uv.a()) + ", " + String(uv.b()) + ", " +
-                String(uv.uvcomp1()) + ", " + String(uv.uvcomp2()) + ", " + 
+                String(uv.uvComp1()) + ", " + String(uv.uvComp2()) + ", " + 
                 String(uv.index()));
   delay(250);
 }
