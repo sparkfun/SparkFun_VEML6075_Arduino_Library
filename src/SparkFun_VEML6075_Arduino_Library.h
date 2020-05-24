@@ -133,7 +133,6 @@ public:
 
     VEML6075_error_t powerOn(boolean enable = true);
     VEML6075_error_t shutdown(boolean shutdown = true);
-    VEML6075_shutdown_t getShutdown(void);
 
     uint16_t rawUva(void);
     uint16_t rawUvb(void);

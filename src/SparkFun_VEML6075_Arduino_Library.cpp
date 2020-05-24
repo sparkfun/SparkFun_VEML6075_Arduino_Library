@@ -343,10 +343,6 @@ VEML6075_error_t VEML6075::shutdown(boolean shutdown)
     return writeI2CRegister(conf, VEML6075::REG_UV_CONF);
 }
 
-VEML6075::VEML6075_shutdown_t VEML6075::getShutdown(void)
-{
-}
-
 VEML6075_error_t VEML6075::trigger(void)
 {
     return setTrigger(TRIGGER_ONE_OR_UV_TRIG);
