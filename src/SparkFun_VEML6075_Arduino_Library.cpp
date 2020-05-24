@@ -128,11 +128,6 @@ VEML6075_error_t VEML6075::begin(TwoWire &wirePort)
     _deviceAddress = VEML6075_ADDRESS;
     _i2cPort = &wirePort;
 
-#ifdef WIRE_HAS_END
-    _i2cPort->end();
-#endif
-    _i2cPort->begin();
-
     err = _connected();
     if (err != VEML6075_ERROR_SUCCESS)
     {
