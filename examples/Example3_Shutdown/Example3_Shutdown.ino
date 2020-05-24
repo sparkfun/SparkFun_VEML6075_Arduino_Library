@@ -21,29 +21,40 @@
 // Click here to get the library: http://librarymanager/All#SparkFun_VEML6075
 #include <SparkFun_VEML6075_Arduino_Library.h>
 
-VEML6075 uv; // Create a VEML6075 object 
+VEML6075 uv; // Create a VEML6075 object
 
-void setup() {
-  Serial.begin(9600);
-  if (uv.begin() == false) {
+void setup()
+{
+  Serial.begin(115200);
+
+  Wire.begin();
+
+  if (uv.begin() == false)
+  {
     Serial.println("Unable to communicate with VEML6075.");
-    while (1) ;
+    while (1)
+      ;
   }
 }
 
 const unsigned int READINGS_BETWEEN_SHUTDOWN = 50;
 
-void loop() {
+void loop()
+{
   static unsigned int numReadings = 1;
   static boolean powerOnState = true;
-  
-  if ((numReadings % READINGS_BETWEEN_SHUTDOWN) == 0) {
-    if (powerOnState) {
+
+  if ((numReadings % READINGS_BETWEEN_SHUTDOWN) == 0)
+  {
+    if (powerOnState)
+    {
       // Use shutdown to disable sensor readings. The sensor will consume less power in this state.
-      uv.shutdown(); 
+      uv.shutdown();
       Serial.println("Shut down");
-      powerOnState = false;   
-    } else {
+      powerOnState = false;
+    }
+    else
+    {
       // Use powerOn to enable sensor readings.
       uv.powerOn();
       Serial.println("Power up!");
@@ -52,6 +63,6 @@ void loop() {
   }
   Serial.println(String((float)millis() / 1000.0) + ": " + String(uv.uva()) + ", " + String(uv.uvb()) + ", " + String(uv.index()));
   numReadings++;
-  
+
   delay(200);
 }

@@ -21,16 +21,22 @@
 // Click here to get the library: http://librarymanager/All#SparkFun_VEML6075
 #include <SparkFun_VEML6075_Arduino_Library.h>
 
-VEML6075 uv; // Create a VEML6075 object 
+VEML6075 uv; // Create a VEML6075 object
 
-void setup() {
-  Serial.begin(9600);
+void setup()
+{
+  Serial.begin(115200);
+
+  Wire.begin();
+
   // The begin function can take a TwoWire port as a parameter -- in case your platform has more than
   // the one standard "Wire" port.
   // begin will return VEML6075_SUCCESS on success, otherwise it will return an error code.
-  if (uv.begin(Wire) != VEML6075_SUCCESS) {
+  if (uv.begin(Wire) != VEML6075_SUCCESS)
+  {
     Serial.println("Unable to communicate with VEML6075.");
-    while (1) ;
+    while (1)
+      ;
   }
 
   // Integration time: The VEML6075 features five selectable integration times. This is the amount of
@@ -53,13 +59,14 @@ void setup() {
   uv.setHighDynamic(VEML6075::DYNAMIC_HIGH);
 }
 
-void loop() {
+void loop()
+{
   // In addition to uva, uvb, and index, the library also supports reading the raw
   // 16-bit unsigned UVA and UVB values, and visible-light and infrared compensation values with
   // the functions rawUva, rawUvb, visibleCompensation, and irCompensation. These values,
   // in addition to pre-calculated scalars, are used to generate the calculated UVA, UVB and index values.
-  Serial.println(String((float)millis() / 1000.0) + ": " + 
-                 String(uv.rawUva()) + ", " + String(uv.rawUvb()) + ", " + 
+  Serial.println(String((float)millis() / 1000.0) + ": " +
+                 String(uv.rawUva()) + ", " + String(uv.rawUvb()) + ", " +
                  String(uv.visibleCompensation()) + ", " + String(uv.irCompensation()) + ", " +
                  String(uv.uva()) + ", " + String(uv.uvb()) + ", " + String(uv.index()));
   delay(100);
