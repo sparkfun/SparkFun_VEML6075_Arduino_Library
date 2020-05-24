@@ -38,29 +38,34 @@
 typedef uint16_t veml6075_t;
 
 //  Valid VEML6075 addresses
-typedef enum {
+typedef enum
+{
     VEML6075_ADDRESS = 0x10,
     VEML6075_ADDRESS_INVALID = 0xFF
 } VEML6075_Address_t;
 
 // VEML6075 error code returns:
-typedef enum {
-    VEML6075_ERROR_READ            = -4,
-    VEML6075_ERROR_WRITE           = -3,
+typedef enum
+{
+    VEML6075_ERROR_READ = -4,
+    VEML6075_ERROR_WRITE = -3,
     VEML6075_ERROR_INVALID_ADDRESS = -2,
-    VEML6075_ERROR_UNDEFINED       = -1,
-    VEML6075_ERROR_SUCCESS         = 1
+    VEML6075_ERROR_UNDEFINED = -1,
+    VEML6075_ERROR_SUCCESS = 1
 } VEML6075_error_t;
 const VEML6075_error_t VEML6075_SUCCESS = VEML6075_ERROR_SUCCESS;
 
-struct test {
+struct test
+{
     float a;
     float b;
 };
 
-class VEML6075 {
+class VEML6075
+{
 public:
-    typedef enum {
+    typedef enum
+    {
         IT_50MS,
         IT_100MS,
         IT_200MS,
@@ -72,25 +77,29 @@ public:
         IT_INVALID
     } veml6075_uv_it_t;
 
-    typedef enum {
+    typedef enum
+    {
         DYNAMIC_NORMAL,
         DYNAMIC_HIGH,
         HD_INVALID
     } veml6075_hd_t;
 
-    typedef enum {
+    typedef enum
+    {
         NO_TRIGGER,
         TRIGGER_ONE_OR_UV_TRIG,
         TRIGGER_INVALID
     } veml6075_uv_trig_t;
 
-    typedef enum {
+    typedef enum
+    {
         AF_DISABLE,
         AF_ENABLE,
         AF_INVALID
     } veml6075_af_t;
 
-    typedef enum {
+    typedef enum
+    {
         POWER_ON,
         SHUT_DOWN,
         SD_INVALID
@@ -140,23 +149,23 @@ public:
     uint16_t visibleCompensation(void);
     uint16_t irCompensation(void);
 
-    VEML6075_error_t deviceID(uint8_t * id);
-    VEML6075_error_t deviceAddress(uint8_t * address);
+    VEML6075_error_t deviceID(uint8_t *id);
+    VEML6075_error_t deviceAddress(uint8_t *address);
 
 private:
-
     // VEML6075 registers:
-    typedef enum {
+    typedef enum
+    {
         REG_UV_CONF = 0x00,
         REG_UVA_DATA = 0x07,
         REG_UVB_DATA = 0x09,
         REG_UVCOMP1_DATA = 0x0A,
         REG_UVCOMP2_DATA = 0x0B,
-        REG_ID = 0x0C    
+        REG_ID = 0x0C
     } VEML6075_REGISTER_t;
 
     TwoWire *_i2cPort; //The generic connection to user's chosen I2C hardware
-    Stream * _debugPort;
+    Stream *_debugPort;
     VEML6075_Address_t _deviceAddress;
 
     unsigned int _integrationTime;
@@ -167,9 +176,9 @@ private:
 
     VEML6075_error_t _connected(void);
 
-// I2C Read/Write
-    VEML6075_error_t readI2CBuffer(uint8_t * dest, VEML6075_REGISTER_t startRegister, uint16_t len);
-    VEML6075_error_t writeI2CBuffer(uint8_t * src, VEML6075_REGISTER_t startRegister, uint16_t len);
-    VEML6075_error_t readI2CRegister(veml6075_t * dest, VEML6075_REGISTER_t registerAddress);
+    // I2C Read/Write
+    VEML6075_error_t readI2CBuffer(uint8_t *dest, VEML6075_REGISTER_t startRegister, uint16_t len);
+    VEML6075_error_t writeI2CBuffer(uint8_t *src, VEML6075_REGISTER_t startRegister, uint16_t len);
+    VEML6075_error_t readI2CRegister(veml6075_t *dest, VEML6075_REGISTER_t registerAddress);
     VEML6075_error_t writeI2CRegister(veml6075_t data, VEML6075_REGISTER_t registerAddress);
 };
