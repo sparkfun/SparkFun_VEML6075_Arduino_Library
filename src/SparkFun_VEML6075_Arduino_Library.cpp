@@ -122,7 +122,6 @@ boolean VEML6075::begin(void)
 
 VEML6075_error_t VEML6075::begin(TwoWire &wirePort)
 {
-    uint8_t systemControl = 0;
     VEML6075_error_t err;
 
     _deviceAddress = VEML6075_ADDRESS;
@@ -413,11 +412,6 @@ uint16_t VEML6075::rawUvb(void)
 
 float VEML6075::index(void)
 {
-    uint16_t uva;
-    uint16_t uvb;
-    uint16_t uvComp1;
-    uint16_t uvComp2;
-
     /*if ((_lastReadTime + _integrationTime) > millis())
     {
         return _lastIndex;
